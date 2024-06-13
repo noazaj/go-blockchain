@@ -21,31 +21,35 @@ type Block struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+func Transaction(data interface{}) interface{} {
+	return data
+}
+
 func NewBlock(data string) *Block {
 	block := &Block{
 		Data:      data,
 		Timestamp: time.Now(),
 	}
-	block.Nonce = run(block)
 	return block
 }
 
-func CalculateHash(block *Block) string {
+func calculateHash(block *Block) string {
 	record := fmt.Sprintf("%d%d%v%v", block.BlockNum, block.Nonce, block.Data, block.Timestamp)
 	hash := sha256.New()
 	hash.Write([]byte(record))
 	return hex.EncodeToString(hash.Sum(nil))
 }
 
-func run(block *Block) int {
+func run(block *Block) {
+	i := 0
 	for {
-		hash := CalculateHash(block)
+		hash := calculateHash(block)
 		fmt.Println(hash)
 		if strings.HasPrefix(hash, strings.Repeat("0", difficulty)) {
 			break
 		}
-		block.Nonce++
+		i++
 	}
+	block.Nonce = i
 	fmt.Println(block.Nonce)
-	return block.Nonce
 }

@@ -12,8 +12,8 @@ type Blockchain struct {
 }
 
 func NewBlockchain() *Blockchain {
-	genesisBlock := genesisBlock()
-	return &Blockchain{blocks: []*block.Block{genesisBlock}}
+	genBlock := genesisBlock()
+	return &Blockchain{blocks: []*block.Block{genBlock}}
 }
 
 func (bc *Blockchain) AddBlock(block *block.Block) {
@@ -41,6 +41,7 @@ func (bc *Blockchain) PrintBlockchain() {
 
 func genesisBlock() *block.Block {
 	genesis := block.NewBlock("")
+	return genesis
 }
 
 func validateHash(prevBlock, newBlock *block.Block) error {
