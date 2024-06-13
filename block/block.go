@@ -9,47 +9,43 @@ import (
 )
 
 const (
-	difficulty = 4
+	difficulty = 1
 )
 
 type Block struct {
-	BlockNum  int       `json:"block_num"`
-	Nonce     int       `json:"nonce"`
-	Data      string    `json:"data"`
-	PrevHash  string    `json:"prev_hash"`
-	Hash      string    `json:"hash"`
-	Timestamp time.Time `json:"timestamp"`
+	BlockNum  int         `json:"block_num"`
+	Nonce     int         `json:"nonce"`
+	Data      interface{} `json:"data"`
+	PrevHash  string      `json:"prev_hash"`
+	Hash      string      `json:"hash"`
+	Timestamp time.Time   `json:"timestamp"`
 }
 
 func Transaction(data interface{}) interface{} {
 	return data
 }
 
-func NewBlock(data string) *Block {
+func NewBlock(transaction interface{}) *Block {
 	block := &Block{
-		Data:      data,
+		Data:      transaction,
 		Timestamp: time.Now(),
 	}
 	return block
 }
 
 func calculateHash(block *Block) string {
-	record := fmt.Sprintf("%d%d%v%v", block.BlockNum, block.Nonce, block.Data, block.Timestamp)
+	record := fmt.Sprintf("%d%d%v%v%v", block.BlockNum, block.Nonce, block.Data, block.PrevHash, block.Timestamp)
 	hash := sha256.New()
 	hash.Write([]byte(record))
 	return hex.EncodeToString(hash.Sum(nil))
 }
 
-func run(block *Block) {
-	i := 0
+func Run(block *Block) {
 	for {
-		hash := calculateHash(block)
-		fmt.Println(hash)
-		if strings.HasPrefix(hash, strings.Repeat("0", difficulty)) {
+		if strings.HasPrefix(calculateHash(block), strings.Repeat("0", difficulty)) {
+			block.Hash = calculateHash(block)
 			break
 		}
-		i++
+		block.Nonce++
 	}
-	block.Nonce = i
-	fmt.Println(block.Nonce)
 }

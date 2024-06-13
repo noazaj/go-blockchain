@@ -16,32 +16,37 @@ func NewBlockchain() *Blockchain {
 	return &Blockchain{blocks: []*block.Block{genBlock}}
 }
 
-func (bc *Blockchain) AddBlock(block *block.Block) {
+func (bc *Blockchain) AddBlock(newBlock *block.Block) {
 	if len(bc.blocks) == 0 {
 		log.Print("No blocks in blockchain or blockchain not instantiated. Try creating a blockchain.")
 		return
 	}
 
 	prevBlock := bc.blocks[len(bc.blocks)-1]
-	err := validateHash(prevBlock, block)
+	newBlock.BlockNum = prevBlock.BlockNum + 1
+	newBlock.PrevHash = prevBlock.Hash
+	block.Run(newBlock)
+
+	err := validateHash(prevBlock, newBlock)
 	if err != nil {
 		log.Print("Hashes do not match")
 		return
 	}
 
-	bc.blocks = append(bc.blocks, block)
+	bc.blocks = append(bc.blocks, newBlock)
 }
 
 func (bc *Blockchain) PrintBlockchain() {
-	fmt.Print("Blockchain: ")
+	fmt.Println("Blockchain: ")
 	for _, block := range bc.blocks {
-		fmt.Printf("%+v", block)
+		fmt.Printf("%+v\n", block)
 	}
 }
 
 func genesisBlock() *block.Block {
-	genesis := block.NewBlock("")
-	return genesis
+	genBlock := block.NewBlock("")
+	block.Run(genBlock)
+	return genBlock
 }
 
 func validateHash(prevBlock, newBlock *block.Block) error {
