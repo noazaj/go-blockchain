@@ -1,9 +1,11 @@
 package block
 
 import (
+	"bufio"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 )
@@ -21,8 +23,15 @@ type Block struct {
 	Timestamp time.Time   `json:"timestamp"`
 }
 
-func Transaction(data interface{}) interface{} {
-	return data
+func Transaction() (interface{}, error) {
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Printf("Data: ")
+	data, err := reader.ReadString('\n')
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 func NewBlock(transaction interface{}) *Block {
